@@ -1,0 +1,146 @@
+>bitsadmin /?
+
+BITSADMIN version 2.0 [ 6.6.2600.2180 ]
+BITS administration utility.
+(C) Copyright 2000-2004 Microsoft Corp.
+
+USAGE: BITSADMIN [/RAWRETURN] [/WRAP | /NOWRAP] command
+The following commands are available:
+
+/HELP                                    Prints this help
+/?                                       Prints this help
+/UTIL /?                                 Prints the list of utilities commands
+/LIST    [/ALLUSERS] [/VERBOSE]          List the jobs
+/MONITOR [/ALLUSERS] [/REFRESH sec]      Monitors the copy manager
+/RESET   [/ALLUSERS]                     Deletes all jobs in the manager
+
+/TRANSFER name [type] [/PRIORITY priority] [/ACLFLAGS flags]
+          remote_url local_name
+    Transfers one of more files.
+    [type] may be /DOWNLOAD or /UPLOAD; default is download
+    Multiple URL/file pairs may be specified.
+
+/CREATE [type] display_name              Creates a job
+    [type] may be /DOWNLOAD, /UPLOAD, or /UPLOAD-REPLY; default is download
+
+/INFO job [/VERBOSE]               Displays information about the job
+/ADDFILE job remote_url local_name Adds a file to the job
+/ADDFILESET job textfile           Adds multiple files to the job
+   Each line of <textfile> lists a file's remote name and local name, separated
+   by spaces.  A line beginning with '#' is treated as a comment.
+   Once the file set is read into memory, the contents are added to the job.
+
+/ADDFILEWITHRANGES  job  remote_url local_name range_list
+   Like /ADDFILE, but BITS will read only selected byte ranges of the URL.
+   range_list is a comma-delimited series of offset and length pairs.
+   For example,
+
+       0:100,2000:100,5000:eof
+
+   instructs BITS to read 100 bytes starting at offset zero, 100 bytes starting
+   at offset 2000, and the remainder of the URL starting at offset 5000.
+
+/REPLACEREMOTEPREFIX job  old_prefix new_prefix
+    All files whose URL begins with <old_prefix> are changed to use <new_prefix>
+
+/LISTFILES job                     Lists the files in the job
+/SUSPEND job                       Suspends the job
+/RESUME job                        Resumes the job
+/CANCEL job                        Cancels the job
+/COMPLETE job                      Completes the job
+
+/GETTYPE job                       Retrieves the job type
+/GETACLFLAGS job                   Retrieves the ACL propagation flags
+
+/SETACLFLAGS job ACL_flags         Sets the ACL propagation flags for the job
+  O - OWNER       G - GROUP
+  D - DACL        S - SACL
+
+  Examples:
+      bitsadmin /setaclflags MyJob OGDS
+      bitsadmin /setaclflags MyJob OGD
+
+/GETBYTESTOTAL job                 Retrieves the size of the job
+/GETBYTESTRANSFERRED job           Retrieves the number of bytes transferred
+/GETFILESTOTAL job                 Retrieves the number of files in the job
+/GETFILESTRANSFERRED job           Retrieves the number of files transferred
+/GETCREATIONTIME job               Retrieves the job creation time
+/GETMODIFICATIONTIME job           Retrieves the job modification time
+/GETCOMPLETIONTIME job             Retrieves the job completion time
+/GETSTATE job                      Retrieves the job state
+/GETERROR job                      Retrieves detailed error information
+/GETOWNER job                      Retrieves the job owner
+/GETDISPLAYNAME job                Retrieves the job display name
+/SETDISPLAYNAME job display_name   Sets the job display name
+/GETDESCRIPTION job                Retrieves the job description
+/SETDESCRIPTION job description    Sets the job description
+/GETPRIORITY    job                Retrieves the job priority
+/SETPRIORITY    job priority       Sets the job priority
+/GETNOTIFYFLAGS job                Retrieves the notify flags
+/SETNOTIFYFLAGS job notify_flags   Sets the notify flags
+/GETNOTIFYINTERFACE job            Determines if notify interface is registered
+/GETMINRETRYDELAY job              Retrieves the retry delay in seconds
+/SETMINRETRYDELAY job retry_delay  Sets the retry delay in seconds
+/GETNOPROGRESSTIMEOUT job          Retrieves the no progress timeout in seconds
+/SETNOPROGRESSTIMEOUT job timeout  Sets the no progress timeout in seconds
+/GETERRORCOUNT job                 Retrieves an error count for the job
+
+/SETPROXYSETTINGS job <usage>      Sets the proxy usage
+   usage choices:
+    PRECONFIG   - Use the owner's IE defaults.
+    AUTODETECT  - Force autodetection of proxy.
+    NO_PROXY    - Do not use a proxy server.
+    OVERRIDE    - Use an explicit proxy list and bypass list.
+                  Must be followed by a proxy list and a proxy bypass list.
+                  NULL or "" may be used for an empty proxy bypass list.
+  Examples:
+      bitsadmin /setproxysettings MyJob PRECONFIG
+      bitsadmin /setproxysettings MyJob AUTODETECT
+      bitsadmin /setproxysettings MyJob NO_PROXY
+      bitsadmin /setproxysettings MyJob OVERRIDE proxy1:80 "<local>"
+      bitsadmin /setproxysettings MyJob OVERRIDE proxy1,proxy2,proxy3 NULL
+
+/GETPROXYUSAGE job                 Retrieves the proxy usage setting
+/GETPROXYLIST job                  Retrieves the proxy list
+/GETPROXYBYPASSLIST job            Retrieves the proxy bypass list
+
+/TAKEOWNERSHIP job                 Take ownership of the job
+
+/SETNOTIFYCMDLINE job program_name [program_parameters]
+    Sets a program to execute for notification, and optionally parameters.
+    The program name and parameters can be NULL.
+    IMPORTANT: if parameters are non-NULL, then the program name should be the
+               first parameter.
+
+  Examples:
+    bitsadmin /SetNotifyCmdLine MyJob c:\winnt\system32\notepad.exe  NULL
+    bitsadmin /SetNotifyCmdLine MyJob c:\foo.exe "c:\foo.exe parm1 parm2"
+    bitsadmin /SetNotifyCmdLine MyJob NULL NULL
+
+/GETNOTIFYCMDLINE job              returns the job's notification command line
+
+/SETCREDENTIALS job <target> <scheme> <username> <password>
+  Adds credentials to a job.
+  <target> may be either SERVER or PROXY
+  <scheme> may be BASIC, DIGEST, NTLM, NEGOTIATE, or PASSPORT.
+
+/REMOVECREDENTIALS job <target> <scheme>
+  Removes credentials from a job.
+
+The following options are valid for UPLOAD-REPLY jobs only:
+
+/GETREPLYFILENAME job      Gets the path of the file containing the server reply
+/SETREPLYFILENAME job path Sets the path of the file containing the server reply
+/GETREPLYPROGRESS job      Gets the size and progress of the server reply
+/GETREPLYDATA     job      Dumps the server's reply data in hex format
+
+The following options can be placed before the command:
+/RAWRETURN                         Return data more suitable for parsing
+/WRAP                              Wrap output around console (default)
+/NOWRAP                            Don't wrap output around console
+
+The /RAWRETURN option strips new line characters and formatting.
+It is recognized by the /CREATE and /GET* commands.
+
+Commands that take a job parameter will accept either a job name or a job-ID
+GUID inside braces.  BITSADMIN reports an error if a name is ambiguous.
